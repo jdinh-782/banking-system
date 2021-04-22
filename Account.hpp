@@ -2,26 +2,36 @@
 #define _ACCOUNT_HPP
 
 #include <iostream>
+#include <utility>
+#include <fstream>
+#include <ctime>
 
 
 class Account
 {
 private:
-    std::string firstName, secondName, phoneNumber, email, password;
+    std::string firstName, lastName, phoneNumber, email, password, accountNumber;
 
 public:
     Account();
+    Account(std::string emailInput, std::string passwordInput);
 
     void setName();
+    void setName(std::string loginFirstName, std::string loginLastName); //set name from login
     void setPhoneNumber();
+    void setPhoneNumber(std::string phoneNumberInput);
     void setEmail();
     void setPassword();
+    void setAccountNumber();
+    void setAccountNumber(std::string accountNumberInput);
+    void saveToFile();
 
     static void excess();
 
     std::string checkEmail();
-
     std::string checkPhoneNumber();
+    std::string getAccountNumber();
+
     bool recursiveCheckPhoneNumber(int index);
 
     friend std::ostream& operator << (std::ostream& outs, const Account& a);
@@ -30,6 +40,12 @@ public:
 
 Account::Account()
 = default;
+
+Account::Account(std::string emailInput, std::string passwordInput)
+{
+    email = std::move(emailInput);
+    password = std::move(passwordInput);
+}
 
 void Account::excess()
 {
@@ -48,7 +64,7 @@ void Account::setName()
     std::getline(std::cin, firstName);
 
     std::cout << "\nEnter last name: ";
-    std::getline(std::cin, secondName);
+    std::getline(std::cin, lastName);
 }
 
 void Account::setPhoneNumber()
@@ -138,12 +154,56 @@ void Account::setPassword()
     std::cin >> password;
 }
 
+void Account::setAccountNumber()
+{
+    srand(time(nullptr));
+    int num;
+
+    for (int i = 0; i < 10; i++)
+    {
+        num = 1 + rand() % 9;
+        accountNumber += std::to_string(num);
+    }
+}
+
+void Account::saveToFile()
+{
+    std::ofstream ofs("accounts.txt");
+
+    ofs << "First name: " << firstName << " *\nLast name: " << lastName << " *\nPhone number: "
+        << phoneNumber << " *\nEmail: " << email << " *\nPassword: " << password << " *\nAccount number: "
+        << accountNumber;
+    ofs.close();
+}
+
 std::ostream& operator << (std::ostream&outs, const Account& a)
 {
-    outs << "\nFirst name: " << a.firstName << "\nLast name: " << a.secondName << "\nPhone number: "
-              << a.phoneNumber << "\nEmail: " << a.email << "\nPassword: " << a.password;
+    outs << "\nFirst name: " << a.firstName << "\nLast name: " << a.lastName << "\nPhone number: "
+         << a.phoneNumber << "\nEmail: " << a.email << "\nPassword: " << a.password << "\nAccount number: "
+         << a.accountNumber;
 
     return outs;
+}
+
+void Account::setName(std::string loginFirstName, std::string loginLastName)
+{
+    firstName = std::move(loginFirstName);
+    lastName = std::move(loginLastName);
+}
+
+void Account::setPhoneNumber(std::string phoneNumberInput)
+{
+    phoneNumber = std::move(phoneNumberInput);
+}
+
+void Account::setAccountNumber(std::string accountNumberInput)
+{
+    accountNumber = std::move(accountNumberInput);
+}
+
+std::string Account::getAccountNumber()
+{
+    return accountNumber;
 }
 
 
